@@ -24,30 +24,24 @@
 #                                                                              #
 ################################################################################
 
-from sys import stdout
-from time import sleep
+import os
+import sys
+import time
+routes = open ('ips.txt','r')
 
-announces = [
-    'announce route 100.10.0.0/32 next-hop self',
-    'announce route 200.20.0.0/32 next-hop self',
-]
+for route in routes:
+    sys.stdout.write(route)
+    sys.stdout.flush()
+    time.sleep(0.60)
 
-sleep(5)
 
-#Iterate through announce routes, and send output to ExaBGP :D,
-#The return is like: announce route 100.10.0.0/24 next-hop self
-#By the way, when u use the announce command, automatically your
-#packet prefix is build correctly
-for announce in announces:
-    stdout.write(announce + '\n')
-    stdout.flush()
-    #print(announce)
-    sleep(1)
-
-#Loop endlessly to allow ExaBGP to continue running, the process will be running
-#so, we cand do something to update routes automatically!
-while True:
-    sleep(1)
-
-#Next update should work with txt-file! 
-#Next update should work with functions!
+try:
+    now = time.time()
+    while os.getppid() != 1 and time.time() < now + 5:
+        line = sys.stdin.readline().strip()
+        print (line)
+        if not line or 'shutdown' in line:
+            break
+        time.sleep(1)
+except IOError:
+    pass
